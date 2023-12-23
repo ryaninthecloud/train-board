@@ -1,5 +1,5 @@
 """
-DataConsumer provides an interface to make
+DataInterface provides an interface to make
 and parse requests to the Darwin API
 provided by Network Rail
 """
@@ -7,11 +7,12 @@ provided by Network Rail
 import configparser as cpr
 from os.path import exists
 
-class DataConsumer:
+class DataInterface:
     """
-    DataConsumer provides an interface to make
+    DataInterface provides an interface to make
     and parse requests to the Darwin API
-    provided by Network Rail
+    provided by Network Rail and returns
+    display middleware friendly responses
     """
     def __init__(self, config_location=None):
         """
@@ -25,8 +26,11 @@ class DataConsumer:
         cfg_file = cpr.ConfigParser()
 
         try:
-            cfg_file = cpr.ConfigParser()
+            cfg_file.read("")
         except PermissionError:
             raise(f"Error: Application does not have\
                   required permissions to open config\
                   file at {config_location}")
+        except FileNotFoundError:
+            raise(f"Error: Application config file at\
+                  {config_location} does not exist.")
