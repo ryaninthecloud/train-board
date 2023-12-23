@@ -5,7 +5,7 @@ provided by Network Rail
 """
 
 import configparser as cpr
-from os.path import exists
+from sys import exit
 
 class DataInterface:
     """
@@ -21,16 +21,21 @@ class DataInterface:
         :type: string
         """
         if config_location is None:
-            config_location = "./configuration.ini"
+            config_location = "configuration.ini"
 
         cfg_file = cpr.ConfigParser()
 
         try:
-            cfg_file.read("")
+            cfg_file.read(config_location)
         except PermissionError:
-            raise(f"Error: Application does not have\
-                  required permissions to open config\
-                  file at {config_location}")
+            print(f"""Error: Application does not have required permissions to open config file at {config_location}""")
+            exit(1)
         except FileNotFoundError:
-            raise(f"Error: Application config file at\
-                  {config_location} does not exist.")
+            print(f"""Error: Application config file at {config_location} does not exist.""")
+            exit(1)
+        
+        try:
+            cfg_file['darwin_config']
+        except KeyError as key_error:
+            print(f"""Error: Invalid config, missing key: {key_error}""")
+            exit(1)
