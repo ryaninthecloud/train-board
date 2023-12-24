@@ -2,3 +2,5 @@ configuration.ini
 testing.py
 sample_arrival.xml
 sample_dept.xml
+__pycache__/
+testapi.py
