@@ -50,6 +50,14 @@ void setup() {
 void loop() {
   if( (millis() - last_refreshed_at) > DISPLAY_REFRESH_TIME_MS) {
     //Check if WiFi Connected
+    if (WiFi.status() == WL_CONNECTED) {
+
+    }
+    else {
+      Serial.println("WiFi Error -- No Longer Connected -- Retrying Cx");
+      configure_matrix_display();
+      connect_to_wifi();
+    }
     //Make Get Request
     //Consume and Deserialise JSON into variable
     //Report any error 
@@ -103,3 +111,29 @@ void connect_to_wifi(){
   delay(5000);
 }
 
+String make_http_get_request(const char* endpoint){
+  /*
+  Make HTTP Request to provided endpoint, return String
+  of Response or empty braces if error
+  */
+  WiFiClient wifi_client;
+  HTTPClient http_client;
+
+  http_client.begin(wifi_client, endpoint);
+
+  int http_response_code = http_client.GET();
+
+  String payload = "{}";
+
+  if( http_response_code == 200 ){
+    Serial.println("Successful HTTP Response with 200");
+    payload = http_client.getString();
+  }
+  else {
+    Serial.println("HTTP Error");
+    Serial.println(http_response_code);
+  }
+
+  http_client.end();
+  return payload;
+}
