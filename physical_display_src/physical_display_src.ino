@@ -177,10 +177,6 @@ String shorten_text_to_space(String string_to_shorten, int max_pixels_available)
   while (w > max_pixels_available) {
     train_display_panel->getTextBounds(string_to_shorten, max_pixels_available, 0, &x1, &y1, &w, &h);
     string_to_shorten = string_to_shorten.substring(0, (string_to_shorten.length() - 1));
-    Serial.println("----------");
-    Serial.println(w);
-    Serial.println(string_to_shorten);
-    Serial.println("----------");
   }
   return string_to_shorten;
 }
