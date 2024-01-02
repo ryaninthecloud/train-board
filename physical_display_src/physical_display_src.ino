@@ -48,6 +48,17 @@ void setup() {
 }
 
 void loop() {
+  if( (millis() - last_refreshed_at) > DISPLAY_REFRESH_TIME_MS) {
+    //Check if WiFi Connected
+    //Make Get Request
+    //Consume and Deserialise JSON into variable
+    //Report any error 
+    //Enumerate train services provided
+    //Display train services
+    //Enumerate warning messages
+    //Display warning messages
+    //Update last refreshed at time
+  }
 }
 
 void configure_matrix_display(){
