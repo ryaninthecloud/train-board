@@ -26,7 +26,6 @@ Styling Guidelines followed: https://www.cs.umd.edu/~nelson/classes/resources/cs
 #define SERIAL_BAUD 9600
 
 unsigned long last_refreshed_at = 0;
-
 MatrixPanel_I2S_DMA* train_display_panel = nullptr;
 String live_service_data_received;
 
@@ -39,10 +38,13 @@ void setup() {
     PANEL_CHAIN
   );
   mxconfig.clkphase = false;
-  mxconfig.driver = HUB75_I2S_CFG:l:FM6047;
-  train_display_panel = new MatrixPanel_I2S_DMA(mxconfig);
-  //configureTrainDisplay
-  //connectToWiFi
+  mxconfig.driver = HUB75_I2S_CFG::FM6047;
+  rain_display_panel = new MatrixPanel_I2S_DMA(mxconfig);
+
+  Serial.println("CONFIGURING MATRIX DISPLAY");
+  
+  configure_matrix_display();
+  connect_to_wifi();
 }
 
 void loop() {
@@ -62,5 +64,31 @@ void configure_matrix_display(){
   train_display_panel->setTextSize(DISPLAY_TEXT_SIZE);
   train_display_panel->setFont(&Picopixel);
 }
-void connect_to_wifi(){}
+
+void connect_to_wifi(){
+  /*
+  Connect to WiFi Network, outputting 
+  IP address to display and serial console 
+  once successful connection is made.
+
+  Delay at end to allow time to read IP Address
+  */
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  Serial.println("Connecting to WiFi");
+  train_display_panel->println(("Connecting to Net");
+
+  while(WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.println("Awaiting WiFi Cx");
+  }
+
+  Serial.println("-----");
+  Serial.println("Connected with IP: ");
+  Serial.print(WiFi.localIP());
+
+  train_display_panel->println("Connected with IP: ");
+  train_display_panel->println(WiFi.localIP());
+
+  delay(5000);
+}
 
