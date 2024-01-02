@@ -18,16 +18,18 @@ Styling Guidelines followed: https://www.cs.umd.edu/~nelson/classes/resources/cs
 #define PANEL_RES_Y 32
 #define PANEL_CHAIN 1
 #define DISPLAY_YELLOW 0XFFE0
+#define DISPLAY_RED 0xF00
 #define DISPLAY_TEXT_SIZE 1
-#define WIFI_SSID ssid_here
-#define WIFI_PASSWORD ssid_password_here
-#define API_ENDPOINT_ADDRESS endpoint_address_here
+#define WIFI_SSID "ssid_here"
+#define WIFI_PASSWORD "ssid_password_here"
+#define API_ENDPOINT_ADDRESS "endpoint_address_here"
 #define DISPLAY_REFRESH_TIME_MS 5000
 #define SERIAL_BAUD 9600
 
 unsigned long last_refreshed_at = 0;
 MatrixPanel_I2S_DMA* train_display_panel = nullptr;
 String live_service_data_received;
+bool verbose_http_requests = false;
 
 void setup() {
   Serial.begin(SERIAL_BAUD);
@@ -51,7 +53,32 @@ void loop() {
   if( (millis() - last_refreshed_at) > DISPLAY_REFRESH_TIME_MS) {
     //Check if WiFi Connected
     if (WiFi.status() == WL_CONNECTED) {
+      //Make Get Request
+      live_service_data_received = make_http_get_request(API_ENDPOINT_ADDRESS);
+      
+      if(verbose_http_requests){
+        Serial.println(live_service_data_received);
+      }
 
+      StaticJsonDocument<1024> json_doc;
+      DeserializationError deserial_error = deserializeJson(json_doc, live_service_data_received);
+
+      if(deserial_error){
+        Serial.println("Deserialisation Failed: ");
+        Serial.println(deserial_error.c_str());
+        return;    
+      }
+
+      int service_number = 0;
+
+      for(JsonObject train_service : json_doc["train_services"].as<JsonArray>()) {
+        //set_update_dispatch_line();
+        service_number++;
+      }
+      //Enumerate train services provided
+      //Display train services
+      //Enumerate warning messages
+      //Display warning messages
     }
     else {
       Serial.println("WiFi Error -- No Longer Connected -- Retrying Cx");
@@ -115,6 +142,8 @@ String make_http_get_request(const char* endpoint){
   /*
   Make HTTP Request to provided endpoint, return String
   of Response or empty braces if error
+  Args: 
+    char* endpoint = the endpoint to make the request to
   */
   WiFiClient wifi_client;
   HTTPClient http_client;
@@ -137,3 +166,81 @@ String make_http_get_request(const char* endpoint){
   http_client.end();
   return payload;
 }
+
+void set_update_time_data(const String time_data[2], const int line_y_position, const int x_positions[3]){
+  /*
+  Updates and sets the time component of the dispatch line.
+  Data works off Expected rather than scheduled, so if a train is delayed,
+  the train time is displayed in Red.
+  If the train is cancelled it displays 'CNCL'.
+  If the train is on time it displays the scheduled train time in Yellow.
+  Args:
+    String time_data = [scheduled, expected train times]
+    int line_y_position = which y-line position to update
+    int x_positions[3] = [left time x, colon x, right time x positions]
+  */
+  
+  String scheduled_train_time = time_data[0];
+  String expected_train_time = time_data[1];
+  
+  train_display_panel->setTextWrap(false);
+
+  if(expected_train_time == "Cancelled"){
+    train_display_panel->setCursor(x_positions[0], line_y_position);
+    train_display_panel->setTextColor(DISPLAY_RED);
+    train_display_panel->print("CNCL");
+    train_display_panel->setTextColor(DISPLAY_YELLOW);
+    return;
+  }
+  
+  String time_first_two_chars, time_last_two_chars;
+
+  if(expected_train_time == "On time"){
+    time_first_two_chars = scheduled_train_time.substring(0,2);
+    time_last_two_chars = scheduled_train_time.substring(3,5);
+  }
+  else{
+    time_first_two_chars = expected_train_time.substring(0,2);
+    time_last_two_chars = expected_train_time.substring(3,5);
+    train_display_panel->setTextColor(DISPLAY_RED);
+  }
+
+  train_display_panel->setCursor(x_positions[0], line_y);
+  train_display_panel->print(time_first_two_chars);
+
+  train_display_panel->setCursor(x_positions[1], line_y);
+  train_display_panel->print(":");
+
+  train_display_panel->setCursor(x_positions[2], line_y);
+  train_display_panel->print(time_last_two_chars);
+
+  train_display_panel->setTextColor(DISPLAY_YELLOW);
+}
+
+void set_update_dispatch_line(JsonObject service_data, int dispatch_row, int component_to_update){
+  /*
+  Orchestrates the update and display of the dispatch lines.
+  Made up of component functions that support the orderly display of data, such
+  as the time and service ordinal number in a consistent format.
+  
+  For consistent display, display configurations for font size and font are
+  modified here.
+  */
+
+  int line_y_position = 0;
+  int ordinal_x_position = 0;
+  int destination_x_position = 13;
+  int time_left_x_position = 47;
+  int time_colon_x_position = 54;
+  int time_right_x_position = 56;
+
+  train_display_panel->setTextSize(1);
+  train_display_panel->setFont(&Picopixel);
+
+  String train_service_ordinal = service_data["ordinal"];
+  String train_service_destination = service_data["destination"];
+  String train_service_sch_arrival = service_data["sch_arrival"];
+  String train_service_exp_arrival = service_data["exp_arrival"];
+}
+
+
