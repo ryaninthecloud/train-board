@@ -249,6 +249,11 @@ void set_update_dispatch_line(JsonObject service_data, int dispatch_row, int com
   
   For consistent display, display configurations for font size and font are
   modified here.
+
+  Args:
+    service_data = the train service data extracted from the api call
+    dispatch_row = the row to present the data on, between 0-2 (1-3)
+    component_to_update = integer value, for later implementations
   */
 
   int line_y_position = 0;
@@ -296,5 +301,32 @@ void set_update_dispatch_line(JsonObject service_data, int dispatch_row, int com
       set_update_time_data(time_data, line_y_position, time_positional_data);
 
       break;
+  }
+}
+
+void scroll_text_on_board(String text_to_scroll, int y_position, int starting_x_pos){
+  /*
+  For scrolling text at a given location on the board without clearing the entire board of values
+  Args:
+    text_to_scroll = text to scroll across the screen
+    starting_y_pos = the y position or line position to start the text at
+    starting_x_pos = the position to start scrolling the text at
+  */
+  int16_t x1, y1;
+  uint16_t w, h;
+
+  train_display_panel->getTextBounds(text_to_scroll, 0, 0, &x1, &y1, &w, &h);
+  train_display_panel->setTextWrap(false);
+
+  int finishing_x_position = 0 - w;
+  int current_x_pixel_position = starting_x_pos;
+
+  while(current_x_pixel_position >= finishing_x_position){
+    train_display_panel->setCursor(current_x_pixel_position, y_position);
+    //clear the desired location of text, can be trimmed down, but 64 across and 7 down covers 1 line of text
+    train_display_panel->fillRect(0, y_position-5, 64, 7, train_display->color444(0, 0, 0));
+    train_display_panel->print(phrase);
+    --current_x_pixel_position;
+    delay(150);
   }
 }
