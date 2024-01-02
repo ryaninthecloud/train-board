@@ -75,17 +75,14 @@ void loop() {
         set_update_dispatch_line(train_service, service_number, 0);
         service_number++;
       }
-      //Enumerate train services provided
-      //Display train services
-      //Enumerate warning messages
-      //Display warning messages
+
+      scroll_text_on_board(json_doc["warning_messages"], 25, 0);
+
     } else {
       Serial.println("WiFi Error -- No Longer Connected -- Retrying Cx");
       configure_matrix_display();
       connect_to_wifi();
     }
-    //Enumerate warning messages
-    //Display warning messages
     last_refreshed_at = millis();
   }
 }
@@ -324,9 +321,10 @@ void scroll_text_on_board(String text_to_scroll, int y_position, int starting_x_
   while(current_x_pixel_position >= finishing_x_position){
     train_display_panel->setCursor(current_x_pixel_position, y_position);
     //clear the desired location of text, can be trimmed down, but 64 across and 7 down covers 1 line of text
-    train_display_panel->fillRect(0, y_position-5, 64, 7, train_display->color444(0, 0, 0));
-    train_display_panel->print(phrase);
+    train_display_panel->fillRect(0, y_position-5, 64, 7, train_display_panel->color444(0, 0, 0));
+    train_display_panel->print(text_to_scroll);
     --current_x_pixel_position;
     delay(150);
   }
 }
+
