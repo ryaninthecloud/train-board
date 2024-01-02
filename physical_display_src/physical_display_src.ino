@@ -4,6 +4,8 @@ physical display.
 
 This code is designed for an ESP32 Development board with WiFi, combined
 with a Waveshare 32x64 LED Matrix display.
+
+Styling Guidelines followed: https://www.cs.umd.edu/~nelson/classes/resources/cstyleguide/
 */
 
 #define PANEL_RES_X 64
@@ -32,6 +34,9 @@ void setup() {
   );
   mxconfig.clkphase = false;
   mxconfig.driver = HUB75_I2S_CFG:l:FM6047;
+  train_display_panel = new MatrixPanel_I2S_DMA(mxconfig);
+  //configureTrainDisplay
+  //connectToWiFi
 }
 
 void loop() {
