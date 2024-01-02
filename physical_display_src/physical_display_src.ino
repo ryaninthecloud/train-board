@@ -72,7 +72,7 @@ void loop() {
       int service_number = 0;
 
       for(JsonObject train_service : json_doc["train_services"].as<JsonArray>()) {
-        //set_update_dispatch_line();
+        set_update_dispatch_line(train_service, service_number, 0);
         service_number++;
       }
       //Enumerate train services provided
@@ -85,14 +85,9 @@ void loop() {
       configure_matrix_display();
       connect_to_wifi();
     }
-    //Make Get Request
-    //Consume and Deserialise JSON into variable
-    //Report any error 
-    //Enumerate train services provided
-    //Display train services
     //Enumerate warning messages
     //Display warning messages
-    //Update last refreshed at time
+    last_refreshed_at = millis();
   }
 }
 
@@ -167,6 +162,31 @@ String make_http_get_request(const char* endpoint){
   return payload;
 }
 
+String shorten_text_to_space(String string_to_shorten, int max_pixels_available){
+  /*
+  Because of space limitations on various parts of the display,
+  this function will shorten the provided string to the space
+  available. This is useful when displaying destinations.
+  Args:
+    max_pixels_available = maximum available pixels, used to reduce string to this size
+    string_to_shorten = the string to shorten
+  Returns: shortened string
+  */
+  int16_t x1, y1;
+  uint16_t w, h;
+
+  train_display_panel->getTextBounds(string_to_shorten, max_pixels_available, 0, &x1, &y1, &w, &h);
+  while (w > max_pixels_available) {
+    train_display_panel->getTextBounds(string_to_shorten, max_pixels_available, 0, &x1, &y1, &w, &h);
+    string_to_shorten = string_to_shorten.substring(0, (string_to_shorten.length() - 1));
+    Serial.println("----------");
+    Serial.println(w);
+    Serial.println(string_to_shorten);
+    Serial.println("----------");
+  }
+  return string_to_shorten;
+}
+
 void set_update_time_data(const String time_data[2], const int line_y_position, const int x_positions[3]){
   /*
   Updates and sets the time component of the dispatch line.
@@ -205,13 +225,13 @@ void set_update_time_data(const String time_data[2], const int line_y_position, 
     train_display_panel->setTextColor(DISPLAY_RED);
   }
 
-  train_display_panel->setCursor(x_positions[0], line_y);
+  train_display_panel->setCursor(x_positions[0], line_y_position);
   train_display_panel->print(time_first_two_chars);
 
-  train_display_panel->setCursor(x_positions[1], line_y);
+  train_display_panel->setCursor(x_positions[1], line_y_position);
   train_display_panel->print(":");
 
-  train_display_panel->setCursor(x_positions[2], line_y);
+  train_display_panel->setCursor(x_positions[2], line_y_position);
   train_display_panel->print(time_last_two_chars);
 
   train_display_panel->setTextColor(DISPLAY_YELLOW);
@@ -236,11 +256,45 @@ void set_update_dispatch_line(JsonObject service_data, int dispatch_row, int com
 
   train_display_panel->setTextSize(1);
   train_display_panel->setFont(&Picopixel);
+  train_display_panel->setTextWrap(false);
 
   String train_service_ordinal = service_data["ordinal"];
   String train_service_destination = service_data["destination"];
   String train_service_sch_arrival = service_data["sch_arrival"];
   String train_service_exp_arrival = service_data["exp_arrival"];
+
+  switch (dispatch_row) {
+    case 0:
+      line_y_position = 5;
+      break;
+    case 1:
+      line_y_position = 11;
+      break;
+    case 2:
+      line_y_position = 17;
+      break;
+  }
+
+  train_service_destination = shorten_text_to_space(train_service_destination, time_left_x_position - destination_x_position - 1);
+
+  //Later implementation to update only specific components when specified;
+  switch(component_to_update){
+    case 0:
+      train_display_panel->setCursor(ordinal_x_position, line_y_position);
+      train_display_panel->print(train_service_ordinal);
+
+      train_display_panel->setCursor(destination_x_position, line_y_position);
+      train_display_panel->print(train_service_destination);
+
+      String time_data[2] = {train_service_sch_arrival, train_service_exp_arrival};
+      int time_positional_data[3] = {time_left_x_position, time_colon_x_position, time_right_x_position};
+
+      set_update_time_data(time_data, line_y_position, time_positional_data);
+
+      break;
+  }
+
+
 }
 
 
