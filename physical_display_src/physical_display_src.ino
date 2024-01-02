@@ -18,11 +18,11 @@ Styling Guidelines followed: https://www.cs.umd.edu/~nelson/classes/resources/cs
 #define PANEL_RES_Y 32
 #define PANEL_CHAIN 1
 #define DISPLAY_YELLOW 0XFFE0
-#define DISPLAY_RED 0xF00
+#define DISPLAY_RED 0xF800
 #define DISPLAY_TEXT_SIZE 1
-#define WIFI_SSID "ssid_here"
-#define WIFI_PASSWORD "ssid_password_here"
-#define API_ENDPOINT_ADDRESS "endpoint_address_here"
+#define WIFI_SSID ""
+#define WIFI_PASSWORD ""
+#define API_ENDPOINT_ADDRESS ""
 #define DISPLAY_REFRESH_TIME_MS 5000
 #define SERIAL_BAUD 9600
 
@@ -37,41 +37,41 @@ void setup() {
   HUB75_I2S_CFG mxconfig(
     PANEL_RES_X,
     PANEL_RES_Y,
-    PANEL_CHAIN
-  );
+    PANEL_CHAIN);
   mxconfig.clkphase = false;
   mxconfig.driver = HUB75_I2S_CFG::FM6047;
   train_display_panel = new MatrixPanel_I2S_DMA(mxconfig);
 
   Serial.println("CONFIGURING MATRIX DISPLAY");
-  
+
   configure_matrix_display();
   connect_to_wifi();
 }
 
 void loop() {
-  if( (millis() - last_refreshed_at) > DISPLAY_REFRESH_TIME_MS) {
+  if ((millis() - last_refreshed_at) > DISPLAY_REFRESH_TIME_MS) {
     //Check if WiFi Connected
     if (WiFi.status() == WL_CONNECTED) {
       //Make Get Request
+      train_display_panel->clearScreen();
       live_service_data_received = make_http_get_request(API_ENDPOINT_ADDRESS);
-      
-      if(verbose_http_requests){
+
+      if (verbose_http_requests) {
         Serial.println(live_service_data_received);
       }
 
       StaticJsonDocument<1024> json_doc;
       DeserializationError deserial_error = deserializeJson(json_doc, live_service_data_received);
 
-      if(deserial_error){
+      if (deserial_error) {
         Serial.println("Deserialisation Failed: ");
         Serial.println(deserial_error.c_str());
-        return;    
+        return;
       }
 
       int service_number = 0;
 
-      for(JsonObject train_service : json_doc["train_services"].as<JsonArray>()) {
+      for (JsonObject train_service : json_doc["train_services"].as<JsonArray>()) {
         set_update_dispatch_line(train_service, service_number, 0);
         service_number++;
       }
@@ -79,8 +79,7 @@ void loop() {
       //Display train services
       //Enumerate warning messages
       //Display warning messages
-    }
-    else {
+    } else {
       Serial.println("WiFi Error -- No Longer Connected -- Retrying Cx");
       configure_matrix_display();
       connect_to_wifi();
@@ -91,14 +90,14 @@ void loop() {
   }
 }
 
-void configure_matrix_display(){
+void configure_matrix_display() {
   /*
   Configure the Matrix Display initially
   with cursor position; style, size and colour
   of font; as well as brightness
   */
   train_display_panel->begin();
-  train_display_panel->setBrightness(255);
+  train_display_panel->setBrightness8(255);
   train_display_panel->fillScreen(train_display_panel->color444(0, 0, 0));
   train_display_panel->setCursor(0, 5);
   train_display_panel->setTextColor(DISPLAY_YELLOW);
@@ -106,7 +105,7 @@ void configure_matrix_display(){
   train_display_panel->setFont(&Picopixel);
 }
 
-void connect_to_wifi(){
+void connect_to_wifi() {
   /*
   Connect to WiFi Network, outputting 
   IP address to display and serial console 
@@ -118,7 +117,7 @@ void connect_to_wifi(){
   Serial.println("Connecting to WiFi");
   train_display_panel->println("Connecting to Net");
 
-  while(WiFi.status() != WL_CONNECTED) {
+  while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.println("Awaiting WiFi Cx");
   }
@@ -133,7 +132,7 @@ void connect_to_wifi(){
   delay(5000);
 }
 
-String make_http_get_request(const char* endpoint){
+String make_http_get_request(const char* endpoint) {
   /*
   Make HTTP Request to provided endpoint, return String
   of Response or empty braces if error
@@ -149,11 +148,10 @@ String make_http_get_request(const char* endpoint){
 
   String payload = "{}";
 
-  if( http_response_code == 200 ){
+  if (http_response_code == 200) {
     Serial.println("Successful HTTP Response with 200");
     payload = http_client.getString();
-  }
-  else {
+  } else {
     Serial.println("HTTP Error");
     Serial.println(http_response_code);
   }
@@ -162,7 +160,7 @@ String make_http_get_request(const char* endpoint){
   return payload;
 }
 
-String shorten_text_to_space(String string_to_shorten, int max_pixels_available){
+String shorten_text_to_space(String string_to_shorten, int max_pixels_available) {
   /*
   Because of space limitations on various parts of the display,
   this function will shorten the provided string to the space
@@ -187,7 +185,7 @@ String shorten_text_to_space(String string_to_shorten, int max_pixels_available)
   return string_to_shorten;
 }
 
-void set_update_time_data(const String time_data[2], const int line_y_position, const int x_positions[3]){
+void set_update_time_data(const String time_data[2], const int line_y_position, const int x_positions[3]) {
   /*
   Updates and sets the time component of the dispatch line.
   Data works off Expected rather than scheduled, so if a train is delayed,
@@ -199,29 +197,39 @@ void set_update_time_data(const String time_data[2], const int line_y_position, 
     int line_y_position = which y-line position to update
     int x_positions[3] = [left time x, colon x, right time x positions]
   */
-  
+
   String scheduled_train_time = time_data[0];
   String expected_train_time = time_data[1];
-  
+  String cancellation_value = "Cancelled";
+  String ontime_value = "On time";
+  String delayed_value = "Delayed";
+
   train_display_panel->setTextWrap(false);
 
-  if(expected_train_time == "Cancelled"){
+  if (expected_train_time == delayed_value) {
+    train_display_panel->setCursor(x_positions[0], line_y_position);
+    train_display_panel->setTextColor(DISPLAY_RED);
+    train_display_panel->print("DLY");
+    train_display_panel->setTextColor(DISPLAY_YELLOW);
+    return;
+  }
+
+  if (expected_train_time == cancellation_value) {
     train_display_panel->setCursor(x_positions[0], line_y_position);
     train_display_panel->setTextColor(DISPLAY_RED);
     train_display_panel->print("CNCL");
     train_display_panel->setTextColor(DISPLAY_YELLOW);
     return;
   }
-  
+
   String time_first_two_chars, time_last_two_chars;
 
-  if(expected_train_time == "On time"){
-    time_first_two_chars = scheduled_train_time.substring(0,2);
-    time_last_two_chars = scheduled_train_time.substring(3,5);
-  }
-  else{
-    time_first_two_chars = expected_train_time.substring(0,2);
-    time_last_two_chars = expected_train_time.substring(3,5);
+  if (expected_train_time == ontime_value) {
+    time_first_two_chars = scheduled_train_time.substring(0, 2);
+    time_last_two_chars = scheduled_train_time.substring(3, 5);
+  } else {
+    time_first_two_chars = expected_train_time.substring(0, 2);
+    time_last_two_chars = expected_train_time.substring(3, 5);
     train_display_panel->setTextColor(DISPLAY_RED);
   }
 
@@ -237,7 +245,7 @@ void set_update_time_data(const String time_data[2], const int line_y_position, 
   train_display_panel->setTextColor(DISPLAY_YELLOW);
 }
 
-void set_update_dispatch_line(JsonObject service_data, int dispatch_row, int component_to_update){
+void set_update_dispatch_line(JsonObject service_data, int dispatch_row, int component_to_update) {
   /*
   Orchestrates the update and display of the dispatch lines.
   Made up of component functions that support the orderly display of data, such
@@ -278,7 +286,7 @@ void set_update_dispatch_line(JsonObject service_data, int dispatch_row, int com
   train_service_destination = shorten_text_to_space(train_service_destination, time_left_x_position - destination_x_position - 1);
 
   //Later implementation to update only specific components when specified;
-  switch(component_to_update){
+  switch (component_to_update) {
     case 0:
       train_display_panel->setCursor(ordinal_x_position, line_y_position);
       train_display_panel->print(train_service_ordinal);
@@ -286,15 +294,11 @@ void set_update_dispatch_line(JsonObject service_data, int dispatch_row, int com
       train_display_panel->setCursor(destination_x_position, line_y_position);
       train_display_panel->print(train_service_destination);
 
-      String time_data[2] = {train_service_sch_arrival, train_service_exp_arrival};
-      int time_positional_data[3] = {time_left_x_position, time_colon_x_position, time_right_x_position};
+      String time_data[2] = { train_service_sch_arrival, train_service_exp_arrival };
+      int time_positional_data[3] = { time_left_x_position, time_colon_x_position, time_right_x_position };
 
       set_update_time_data(time_data, line_y_position, time_positional_data);
 
       break;
   }
-
-
 }
-
-
