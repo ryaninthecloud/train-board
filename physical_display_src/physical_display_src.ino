@@ -39,7 +39,7 @@ void setup() {
   );
   mxconfig.clkphase = false;
   mxconfig.driver = HUB75_I2S_CFG::FM6047;
-  rain_display_panel = new MatrixPanel_I2S_DMA(mxconfig);
+  train_display_panel = new MatrixPanel_I2S_DMA(mxconfig);
 
   Serial.println("CONFIGURING MATRIX DISPLAY");
   
@@ -94,7 +94,7 @@ void connect_to_wifi(){
   */
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   Serial.println("Connecting to WiFi");
-  train_display_panel->println(("Connecting to Net");
+  train_display_panel->println("Connecting to Net");
 
   while(WiFi.status() != WL_CONNECTED) {
     delay(500);
