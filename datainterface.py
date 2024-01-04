@@ -144,8 +144,11 @@ class DataInterface:
         """
         try:        
             response = requests.post(self.__darwin_url, data=body, headers=self.__common_headers)
+            print(response.status_code)
             if response.status_code == 401:
                 return "XTErrorXT:darwin_authorisation"
+            elif response.status_code in [404, 400]:
+                return "XTErrorXT:darwin_connection"
             elif response.status_code != 200:
                 return "XTErrorXT:darwin_other"
         except ConnectionError:
@@ -206,7 +209,6 @@ class DataInterface:
             train_service_position_integer = 1
             for service in train_services:
                 _service = service_template.copy()
-                print(service_template)
                 _service['ordinal'] = self.make_ordinal(train_service_position_integer)
                 _service['destination'] = service['lt5:destination']['lt4:location']['lt4:locationName']
                 _service['sch_arrival'] = service['lt4:std']
