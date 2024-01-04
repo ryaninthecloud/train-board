@@ -93,6 +93,7 @@ class DataInterface:
         }
 
         error_template = {
+            "response_status":500,
             "error_type": None,
             "error_message": None
         }
@@ -167,6 +168,7 @@ class DataInterface:
             return self.produce_error_response(arrivals_element_tree.split(":")[1])
 
         response_template = {
+            "response_status":None,
             "data_for_station":None,
             "warning_messages":None,
             "train_services":None
@@ -220,6 +222,7 @@ class DataInterface:
 
         print(cleaned_train_services)
 
+        response_template["response_status"] = 200
         response_template["data_for_station"] = data_for_station
         response_template["warning_messages"] = warning_messages
         response_template["train_services"] = cleaned_train_services
