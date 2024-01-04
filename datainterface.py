@@ -9,7 +9,6 @@ from sys import exit
 import requests
 import xml.etree.ElementTree as ElementTree
 import xmltodict
-import json
 
 class DataInterface:
     """
@@ -55,6 +54,58 @@ class DataInterface:
             'text/xml'
         }
 
+    @staticmethod
+    def make_ordinal(n) -> str:
+        """
+        Returns an ordinal string for a number
+        Credit to: Florian Brucker on StackOverflow
+
+        :param n: the integer position, i.e. 1 or 2
+        :returns: the string ordinal position i.e. 1st or 2nd
+        :rtype string
+        """
+        n = int(n)
+        if 11 <= (n % 100) <= 13:
+            suffix = 'th'
+        else:
+            suffix = ['th', 'st', 'nd', 'rd', 'th'][min(n % 10, 4)]
+        return str(n) + suffix
+    
+    def produce_error_response(self, error_key: str) -> dict:
+        """
+        Produces a standardised response when an error occurs
+        in the retrieval, parsing or delivery of data.
+
+        This response can be parsed and sent to the matrix display
+        for viewing by the user. This function can be expanded in 
+        the future for more detailed error management.
+
+        :param error_message: error message content response
+        :type: string
+        :returns a dictionary of response content for api to deliver
+        :rtype dictionary
+        """
+        known_errors = {
+            "darwin_connection":"Could not connect to Darwin",
+            "darwin_authorisation":"Check Darwin Token",
+            "darwin_other":"Other Darwin Error",
+            "darwin_station_key":"Check Station Key"
+        }
+
+        error_template = {
+            "error_type": None,
+            "error_message": None
+        }
+
+        if error_key not in known_errors.keys():
+            error_template["error_type"] = error_key.strip().replace(" ","_")
+            error_key["non-standard error raised"]
+        else:
+            error_template["error_type"] = error_key
+            error_template["error_message"] = known_errors[error_key]
+
+        return error_template
+
     def get_station_arrivals(self, arrival_station=None, 
                              time_window=None, max_rows=None) -> str:
         """
@@ -89,8 +140,15 @@ class DataInterface:
                 </ldb:GetDepartureBoardRequest>
             </soapenv:Body>
             </soapenv:Envelope>
-        """        
-        response = requests.post(self.__darwin_url, data=body, headers=self.__common_headers)
+        """
+        try:        
+            response = requests.post(self.__darwin_url, data=body, headers=self.__common_headers)
+            if response.status_code == 401:
+                return "XTErrorXT:darwin_authorisation"
+            elif response.status_code != 200:
+                return "XTErrorXT:darwin_other"
+        except ConnectionError:
+            return "XTErrorTX:darwin_connection"
         return response.text
 
     def return_display_friendly_arrivals(self, arrivals_element_tree: str) -> dict:
@@ -104,26 +162,31 @@ class DataInterface:
         :returns dictionary of train arrivals
         :rtype dict
         """
+
+        if "XTErrorXT:" in arrivals_element_tree:
+            return self.produce_error_response(arrivals_element_tree.split(":")[1])
+
+        response_template = {
+            "data_for_station":None,
+            "warning_messages":None,
+            "train_services":None
+        }
+
         arrivals_dict = xmltodict.parse(arrivals_element_tree)
+
         try:
             content_root = arrivals_dict['soap:Envelope']\
                 ['soap:Body']['GetDepartureBoardResponse']['GetStationBoardResult']
             data_for_station = content_root['lt4:locationName']
         except KeyError:
-            station_not_exists_value = {
-                'destination':'ERR:STATION VALUE',
-                'sch_arrival':'Error',
-                'exp_arrival':'Error'
-            }
-            return {
-                'data_for_station':'ERROR',
-                'warning_messages':'CHECK STATION VALUE',
-                'train_services':[station_not_exists_value]
-            }
+            return self.produce_error_response("darwin_station_key")
 
         try:
             warning_messages = content_root['lt4:nrccMessages']\
-                ['lt:message'].split('.')[0].replace('/', '')
+                ['lt:message']    
+            if type(warning_messages) is list:
+                warning_messages = warning_messages[0]
+            warning_messages = warning_messages.split('.')[0].replace('/', '').replace("\n","").replace("<p>","").replace("</p>","")
         except KeyError:
             warning_messages = f'Good Service for Station {data_for_station}'
 
@@ -131,20 +194,24 @@ class DataInterface:
 
         try:
             train_services = content_root['lt8:trainServices']['lt8:service']
+            train_service_position_integer = 1
             for service in train_services:
                 _service = {}
+                _service['ordinal'] = self.make_ordinal(train_service_position_integer)
                 _service['destination'] = service['lt5:destination']['lt4:location']['lt4:locationName']
                 _service['sch_arrival'] = service['lt4:std']
                 _service['exp_arrival'] = service['lt4:etd']
                 cleaned_train_services.append(_service)
+                train_service_position_integer += 1
         except KeyError:
             no_services_value = {
+                'ordinal':'0',
                 'destination':'NO SERVICES',
                 'sch_arrival':'',
                 'exp_arrival':''
             }
             cleaned_train_services.append(no_services_value)
-
+        print(cleaned_train_services)
         return {
             'data_for_station':data_for_station,
             'warning_messages':warning_messages,
