@@ -172,6 +172,13 @@ class DataInterface:
             "train_services":None
         }
 
+        service_template = {
+            "ordinal":None,
+            "destination":None,
+            "sch_arrival":None,
+            "exp_arrival":None
+        }
+
         arrivals_dict = xmltodict.parse(arrivals_element_tree)
 
         try:
@@ -196,7 +203,7 @@ class DataInterface:
             train_services = content_root['lt8:trainServices']['lt8:service']
             train_service_position_integer = 1
             for service in train_services:
-                _service = {}
+                _service = service_template
                 _service['ordinal'] = self.make_ordinal(train_service_position_integer)
                 _service['destination'] = service['lt5:destination']['lt4:location']['lt4:locationName']
                 _service['sch_arrival'] = service['lt4:std']
@@ -204,16 +211,17 @@ class DataInterface:
                 cleaned_train_services.append(_service)
                 train_service_position_integer += 1
         except KeyError:
-            no_services_value = {
-                'ordinal':'0',
-                'destination':'NO SERVICES',
-                'sch_arrival':'',
-                'exp_arrival':''
-            }
-            cleaned_train_services.append(no_services_value)
+            service = service_template
+            _service['ordinal'] = self.make_ordinal(0)
+            _service['destination'] = "No Services"
+            _service['sch_arrival'] = "0000"
+            _service['exp_arrival'] = "0000"
+            cleaned_train_services.append(_service)
+
         print(cleaned_train_services)
-        return {
-            'data_for_station':data_for_station,
-            'warning_messages':warning_messages,
-            'train_services':cleaned_train_services
-        }
+
+        response_template["data_for_station"] = data_for_station
+        response_template["warning_messages"] = warning_messages
+        response_template["train_services"] = cleaned_train_services
+
+        return response_template
