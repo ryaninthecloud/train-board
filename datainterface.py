@@ -205,7 +205,8 @@ class DataInterface:
             train_services = content_root['lt8:trainServices']['lt8:service']
             train_service_position_integer = 1
             for service in train_services:
-                _service = service_template
+                _service = service_template.copy()
+                print(service_template)
                 _service['ordinal'] = self.make_ordinal(train_service_position_integer)
                 _service['destination'] = service['lt5:destination']['lt4:location']['lt4:locationName']
                 _service['sch_arrival'] = service['lt4:std']
@@ -214,7 +215,7 @@ class DataInterface:
                 train_service_position_integer += 1
         except KeyError:
             service = service_template
-            _service['ordinal'] = self.make_ordinal(0)
+            _service['ordinal'] = self.make_ordinal(1)
             _service['destination'] = "No Services"
             _service['sch_arrival'] = "0000"
             _service['exp_arrival'] = "0000"
