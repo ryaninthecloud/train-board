@@ -5,3 +5,6 @@ dflt_dep_station=XXX
 time_window=20
 max_rows=10
 darwin_url=https://lite.realtime.nationalrail.co.uk/OpenLDBWS/ldb12.asmx
+
+[web_interface]
+allowed_ip_list=[]
