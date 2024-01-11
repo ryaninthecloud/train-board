@@ -24,12 +24,9 @@ def request_authorisation():
     """
     try:
         ip_restrictive_state, allowed_ips = load_restrictive_ip_configuration()
-        print(allowed_ips)
-        print(request.remote_addr)
-        print(ip_restrictive_state)
         if ip_restrictive_state and request.remote_addr not in allowed_ips:
             return DataInterface.produce_error_response("internal_auth")
-    except Exception as e:
+    except Exception:
         return DataInterface.produce_error_response("check_logs_api")
 
 if __name__ == "__main__":
