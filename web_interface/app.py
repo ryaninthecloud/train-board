@@ -21,6 +21,12 @@ def request_authorisation():
     Code here will handle authorisation of 
     requests before they are passed on to 
     blueprints.
+
+    Even when denied access because of IP rule
+    implementations, the state of the request
+    will be '200'. This is a coding choice, to
+    make the handling and parsing of API errors
+    easier when received by the Display Controller.
     """
     try:
         ip_restrictive_state, allowed_ips = load_restrictive_ip_configuration()
