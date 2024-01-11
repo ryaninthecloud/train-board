@@ -59,7 +59,7 @@ def load_restrictive_ip_configuration() -> (bool, list):
         web_application_config = parser["web_interface"]
         ip_restriction_active = web_application_config["ip_restriction_active"]
         allowed_ip_addresses = web_application_config["allowed_ip_addresses"]
-        ip_restriction_active = bool(ip_restriction_active)
+        ip_restriction_active = True if ip_restriction_active in ("true", "True") else False
         allowed_ip_addresses = [ip.replace(" ", "") for ip in allowed_ip_addresses.replace("[", "").replace("]", "").split(",")]
     except Exception as general_exception:
         print(f"Error Unknown: When attempting to load IP restrictive states: {general_exception}")

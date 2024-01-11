@@ -30,6 +30,8 @@ class DataInterface:
 
         try:
             cfg_file.read(config_location)
+            if len(cfg_file) == 0:
+                raise FileNotFoundError
         except PermissionError:
             print(f"""Error: Application does not have required permissions to open config file at {config_location}""")
             exit(1)
@@ -45,6 +47,9 @@ class DataInterface:
             self.__default_time_window = cfg_file['time_window']
             self.__default_max_rows = cfg_file['max_rows']
             self.__darwin_url = cfg_file['darwin_url']
+        except cpr.NoSectionError as no_section_error:
+            print(f"Error - Invalid Configuration - Section Missing: {no_section_error} in Configuration File")
+            exit(1)
         except KeyError as key_error:
             print(f"""Error: Invalid config, missing key: {key_error}""")
             exit(1)
@@ -71,7 +76,8 @@ class DataInterface:
             suffix = ['th', 'st', 'nd', 'rd', 'th'][min(n % 10, 4)]
         return str(n) + suffix
     
-    def produce_error_response(self, error_key: str) -> dict:
+    @staticmethod
+    def produce_error_response(error_key: str) -> dict:
         """
         Produces a standardised response when an error occurs
         in the retrieval, parsing or delivery of data.
@@ -89,7 +95,9 @@ class DataInterface:
             "darwin_connection":"Could not connect to Darwin",
             "darwin_authorisation":"Check Darwin Token",
             "darwin_other":"Other Darwin Error",
-            "darwin_station_key":"Check Station Key"
+            "darwin_station_key":"Check Station Key",
+            "internal_auth":"Check IP Allwd",
+            "check_logs_api":"Check Logs API"
         }
 
         error_template = {
