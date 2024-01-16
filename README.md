@@ -15,7 +15,7 @@ Because of the limited storage and processing power, the middleware API acts as 
 
 ### Design Principles
 
-**Predictable Middleware API**
+**Predictable Middleware API**\
 One of the key design choices of this project was to have a predictable API sit between the Darwin Service and the Microcontroller. Predictability in this context meant abstracting away error messages and instead returning simplified messages for the microcontroller to display in the event of an outage of Darwin; an authentication issue or other problem.
 
 Predictability is achieved by only programming the microcontroller to parse messages and display them; the API will always return a 200-code by design (even when it itself encounters an issue) to simplify the handling of states and will return simplified error messages in a standard format for the microcontroller to parse and display.
