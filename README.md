@@ -16,11 +16,11 @@ Because of the limited storage and processing power, the middleware API acts as 
 ### Design Principles
 
 **Predictable Middleware API**\
-One of the key design choices of this project was to have a predictable API sit between the Darwin Service and the Microcontroller. Predictability in this context meant abstracting away error messages and instead returning simplified messages for the microcontroller to display in the event of an outage of Darwin; an authentication issue or other problem.
+One of the key design choices of this project was to have a predictable API sit between the Darwin Service and the Microcontroller. Predictability in this context means abstracting errors with Darwin away from the controller, and instead returning simplified messages for the microcontroller to display to indicate an issue.
 
-Predictability is achieved by only programming the microcontroller to parse messages and display them; the API will always return a 200-code by design (even when it itself encounters an issue) to simplify the handling of states and will return simplified error messages in a standard format for the microcontroller to parse and display.
+Predictability is achieved by only programming the microcontroller to parse and display messages in accordance with a defined format. The API will always return a 200-code by design (even when it itself encounters an issue), because, in this system, even the returning an error message for display is considered a successful operation of the middleware. A total failure of the API (i.e. a non-response) is handled by the microcontroller by falling back to a pre-programmed message.
 
-This means that when changes, enhancements and edge-case additions are required, the work can be completed at the API level and implemented with greater ease than modifying the source code of the microcontroller.
+In addition, this means that modifications to the codebase can be done quicker and with greater ease, because changes can be made to the API to handle for new edge-cases, instead of instructing the microcontroller to change its behaviour.
 
 ## ⚙️ Technology Stack
 
