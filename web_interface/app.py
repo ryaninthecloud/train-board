@@ -1,10 +1,8 @@
 """
-Contains code that runs the overall
-web application, such as the API that
-the display controllers reach out to
-as well as, in the future, the web
-interface that will enable remote
-updates to the train stations.
+Contains the Flask web application.
+Blueprints should be used for routing
+and only pre and post processing
+should be contained within this file.
 """
 
 from flask import Flask, request
@@ -36,5 +34,9 @@ def request_authorisation():
         return DataInterface.produce_error_response("check_logs_api")
 
 if __name__ == "__main__":
+    """
+    For testing application operations.
+    This file shouldn't be used for hosting.
+    """
     validate_configuration_for_application()
     app.run()
