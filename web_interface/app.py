@@ -10,10 +10,10 @@ from api_blueprint import api_blueprint
 from app_utilities import validate_configuration_for_application, load_restrictive_ip_configuration
 from datainterface import DataInterface
 
-app = Flask(__name__)
-app.register_blueprint(api_blueprint, url_prefix="/api")
+web_application = Flask(__name__)
+web_application.register_blueprint(api_blueprint, url_prefix="/api")
 
-@app.before_request
+@web_application.before_request
 def request_authorisation():
     """
     Code here will handle authorisation of 
@@ -39,4 +39,4 @@ if __name__ == "__main__":
     This file shouldn't be used for hosting.
     """
     validate_configuration_for_application()
-    app.run()
+    web_application.run()
