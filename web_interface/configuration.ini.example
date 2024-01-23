@@ -7,5 +7,5 @@ max_rows=10
 darwin_url=https://lite.realtime.nationalrail.co.uk/OpenLDBWS/ldb12.asmx
 
 [web_interface]
-ip_restriction_active=true
+ip_restriction_active=false
 allowed_ip_addresses=
