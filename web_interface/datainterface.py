@@ -215,6 +215,7 @@ class DataInterface:
         try:
             train_services = content_root['lt8:trainServices']['lt8:service']
             train_service_position_integer = 1
+            if isinstance(train_services, dict): train_services = [train_services]
             for service in train_services:
                 _service = service_template.copy()
                 _service['ordinal'] = self.make_ordinal(train_service_position_integer)
