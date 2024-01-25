@@ -23,7 +23,7 @@ Styling Guidelines followed: https://www.cs.umd.edu/~nelson/classes/resources/cs
 #define WIFI_SSID ""
 #define WIFI_PASSWORD ""
 #define API_ENDPOINT_ADDRESS ""
-#define DISPLAY_REFRESH_TIME_MS 600000
+#define DISPLAY_REFRESH_TIME_MS 5000
 #define SERIAL_BAUD 9600
 
 unsigned long last_refreshed_at = 0;
@@ -69,14 +69,25 @@ void loop() {
         return;
       }
 
-      int service_number = 0;
+      int response_status = json_doc["response_status"];
 
-      for (JsonObject train_service : json_doc["train_services"].as<JsonArray>()) {
-        set_update_dispatch_line(train_service, service_number, 0);
-        service_number++;
+      if (response_status == 200){
+        int service_number = 0;
+
+        for (JsonObject train_service : json_doc["train_services"].as<JsonArray>()) {
+          set_update_dispatch_line(train_service, service_number, 0);
+          service_number++;
+        }
+
+        scroll_text_on_board(json_doc["warning_messages"], 25, 64);
       }
 
-      scroll_text_on_board(json_doc["warning_messages"], 25, 0);
+      else {
+        String error_message = json_doc["error_message"];
+        configure_matrix_display();
+        train_display_panel->setTextWrap(true);
+        train_display_panel->println(error_message);
+      }
 
     } else {
       Serial.println("WiFi Error -- No Longer Connected -- Retrying Cx");
@@ -296,7 +307,7 @@ void set_update_dispatch_line(JsonObject service_data, int dispatch_row, int com
       String time_data[2] = { train_service_sch_arrival, train_service_exp_arrival };
       int time_positional_data[3] = { time_left_x_position, time_colon_x_position, time_right_x_position };
 
-      set_update_time_data(time_data, line_y_position, time_positional_data);
+      set_update_time_data(time_data, line_y_position, time_positional_data, false);
 
       break;
   }
@@ -328,4 +339,3 @@ void scroll_text_on_board(String text_to_scroll, int y_position, int starting_x_
     delay(150);
   }
 }
-
