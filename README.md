@@ -26,6 +26,10 @@ Therefore, the microcontroller should merely be a conduit for receiving messages
 
 In order to enable the Abstraction of Responsibility from the microcontroller, this project has a predictable API sitting between the Darwin Service and the Microcontroller. Predictability, in this context, means abstracting errors with Darwin away from the microcontroller, and instead returning simplified messages for the microcontroller to display to indicate an issue.
 
+The Middleware API reaches out to the National Rail Darwin API to receive data for the specified train station, this is returned in XML format. XML can be challenging to parse, and so it makes more sense for the Python middleware to sit between the XML and the microcontroller, with the Python API passing a simplified JSON of information to display straight to the microcontroller - thusly, abstracting parsing and processing responsibility from the microcontroller.
+
+The microcontroller makes a GET request to the middleware at a set interval to receive new information to display.
+
 Predictability is achieved by only programming the microcontroller to parse and display messages in accordance with a defined format. The API will always return an HTTP 200-code by design (even when it itself encounters an issue), because, in this system, even the returning an error message for display is considered a successful operation of the middleware. A total failure of the API (i.e. a non-response) is handled by the microcontroller by falling back to a pre-programmed message.
 
 In addition, this means that handling for new edge-cases and operability can be easily integrated into the system; where changes to the API must only comply with the defined response format and no changes to the microcontroller are required.
