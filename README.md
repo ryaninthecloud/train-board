@@ -112,13 +112,15 @@ When destinations are too long, they look messy, this is because they overwrite 
 
 Initially, the time segment was one whole series of pixels. However, this meant that the colon that separates the time was in different locations on different lines and it looked off. Therefore, the ```set_update_time_data()``` function was implemented to split the time up into consistently placed segements, as seen in the diagram. T1 represents the first two digits in the time (i.e. 22), then a colon is placed at the same location on each line, then the final two digits of the time (i.e. 30).
 
+Where a train is running late, but is providing an expected arrival time - as opposed to saying only 'Delayed' - the microcontroller will take the expected arrival time and display it in the colour red to indicate that the service is running late.
+
 **⚠️ Service Messages**
 
 Service messages are scrolled along the bottom of the screen, as they are too lengthy to properly display on the board.
 
 **❌ Cancelled and Delayed**
 
-Cancelled and Delayed services are handled differently to time units. 
+Cancelled and Delayed services are handled differently to time units. The middleware will pass 'Cancelled' and 'Delayed' to the controller, and when that happens, the microcontroller is programmed to turn the text red and display either 'CNCL' or 'DLYD'.
 
 
 ### 🔒 Layering in Security
