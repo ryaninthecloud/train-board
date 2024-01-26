@@ -133,7 +133,13 @@ So, there are some rudimentary steps that have been taken to prevent unauthorise
 
 If the middleware is being hosted directly on a WSGI, such as Gunicorn, then it's possible to leverage the rudimentary control that has been built into the middleware; which is to check the configuration file for a list of allowed IP addresses and either allow or deny the request based on the remote IP's presence in that file. This function is turned off by default, but can be leveraged as a control that sits on the API and can be updated quickly (as the configuration file is checked each time there is a request, this was a design choice as this isn't meant to be a high-volume, high-performance service but designed for quick modifications at home).
 
-This solution does not work when leveraging Gunicorn on Docker, as the remote address will show as the gateway address of the container, i.e. 172.16.0.1.
+This solution does not work when leveraging Gunicorn on Docker, as the remote address will show as a request from the docker network, which renders the IP restriction ineffective.
+
+**📛 Good ol' UFW**
+
+If the network that the middleware is hosteed on isn't using a network firewall or SDN, then it's perfectly possible to leverage a software firewall such as UncomplicatedFirewall. For firewall rules, it would likely be best to limit the port access the ESP32 has to the Docker host, such as:
+
+```sudo ufw allow proto tcp from esp32IP/32 to DockerHostIP port 5000```
 
 ## ✅ What's Next? 
 ⬜ Add in additional authentication services 
