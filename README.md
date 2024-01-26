@@ -4,6 +4,7 @@
 ## 📷 How's it Looking?
 
 ![photo of display](https://github.com/ryaninthecloud/ryaninthecloud.github.io/blob/main/assets/train-board/demo_photo_01.jpg?raw=true)
+![photo of display 2](https://github.com/ryaninthecloud/ryaninthecloud.github.io/blob/main/assets/train-board/demo_photo_02.jpg)
 
 ## ☕ Project Overview
 
