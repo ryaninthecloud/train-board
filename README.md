@@ -98,6 +98,25 @@ In order to denote a positive or negative response to the microcontroller - so i
 
 ### 📺 Display Efficacy
 
+The process of receiving and displaying information on a matrix display is quite simple; but one of the key challenges with this project was ensuring that the information displayed in a readable and authentic fashion. In order to achieve a consistent, readable display output the matrix display is broken down into a series of sections that are written to - as below.
+
+![diagram of matrix display](https://github.com/ryaninthecloud/ryaninthecloud.github.io/blob/main/assets/train-board/matrix-design.png)
+
+In the C code, each of the sections above are given position integers for the display cursor to begin writing to. The display writing posed a challenge for consitency, so there are some design choices that were made to make life easier when displaying information.
+
+**📍 Destination Length**
+When destinations are too long, they look messy, this is because they overwrite the pixels of other display segments. Therefore, ```shorten_text_to_space()``` function was implemented. This function takes the string to be displayed and the maximum number of pixels available to display the string, if the string is too long for that space, the function recursively shortens the string until it fits within the specified space.
+
+**⏲️ Consistent Time Display**
+Initially, the time segment was one whole series of pixels. However, this meant that the colon that separates the time was in different locations on different lines and it looked off. Therefore, the ```set_update_time_data()``` function was implemented to split the time up into consistently placed segements, as seen in the diagram. T1 represents the first two digits in the time (i.e. 22), then a colon is placed at the same location on each line, then the final two digits of the time (i.e. 30).
+
+**⚠️ Service Messages**
+Service messages are scrolled along the bottom of the screen, as they are too lengthy to properly display on the board.
+
+**❌ Cancelled and Delayed**
+Cancelled and Delayed services are handled differently to time units. 
+
+
 ### 🔒 Layering in Security
 
 ## ✅ What's Next? 
