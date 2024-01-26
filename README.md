@@ -125,6 +125,14 @@ Cancelled and Delayed services are handled differently to time units. The middle
 
 ### 🔒 Layering in Security
 
+Security is a consideration for this project not just because this is an IoT device that lives on a local network, but because the middelware leverages the Darwin API from National Rail, which requires an API token. This IP token is individually issued and is rate limited to 5m requests a month. Which seems like a lot, but if a bad actor started to abuse that, then you would no longer have a train board at home.
+
+So, there are some rudimentary steps that have been taken to prevent unauthorised access (and more on the way, see [What's Next?](#What's Next?)).
+
+**🧱 IP Restrictions**
+
+One of the co
+
 ## ✅ What's Next? 
 
 ## ⚙️ Technology Stack
