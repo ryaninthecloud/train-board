@@ -11,13 +11,11 @@ This project is comprised of a [32x64 LED Matrix Display Board](https://www.wave
 
 Because of the limited storage and processing power, the middleware API acts as a predictable way of interacting with the Darwin service.
 
-## 💭 Architecture
+## 💭 Basic System Architecture
 
 ![diagram of architecture](https://github.com/ryaninthecloud/ryaninthecloud.github.io/blob/main/assets/train-board/architecture.png)
 
-### Design Principles
-------
-
+## 🧑‍🎨 Design Principles
 
 **🔮 Predictable Middleware API**\
 One of the key design choices of this project was to have a predictable API sit between the Darwin Service and the Microcontroller. Predictability, in this context, means abstracting errors with Darwin away from the microcontroller, and instead returning simplified messages for the microcontroller to display to indicate an issue.
