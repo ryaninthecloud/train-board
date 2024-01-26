@@ -127,13 +127,19 @@ Cancelled and Delayed services are handled differently to time units. The middle
 
 Security is a consideration for this project not just because this is an IoT device that lives on a local network, but because the middelware leverages the Darwin API from National Rail, which requires an API token. This IP token is individually issued and is rate limited to 5m requests a month. Which seems like a lot, but if a bad actor started to abuse that, then you would no longer have a train board at home.
 
-So, there are some rudimentary steps that have been taken to prevent unauthorised access (and more on the way, see [What's Next?](#What's Next?)).
+So, there are some rudimentary steps that have been taken to prevent unauthorised access (and more on the way, see What's Next?).
 
 **🧱 IP Restrictions**
 
-One of the co
+If the middleware is being hosted directly on a WSGI, such as Gunicorn, then it's possible to leverage the rudimentary control that has been built into the middleware; which is to check the configuration file for a list of allowed IP addresses and either allow or deny the request based on the remote IP's presence in that file. This function is turned off by default, but can be leveraged as a control that sits on the API and can be updated quickly (as the configuration file is checked each time there is a request, this was a design choice as this isn't meant to be a high-volume, high-performance service but designed for quick modifications at home).
+
+This solution does not work when leveraging Gunicorn on Docker, as the remote address will show as the gateway address of the container, i.e. 172.16.0.1.
 
 ## ✅ What's Next? 
+⬜ Add in additional authentication services 
+⬜ Leverage UDP communication so the microcontroller has automatically detect the API address
+⬜ Have microcontroller receive configuration information from the API
+⬜ Build a simple, secure web page for modifying the configuration of the middleware
 
 ## ⚙️ Technology Stack
 
