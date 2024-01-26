@@ -40,9 +40,9 @@ In order to denote a positive or negative response to the microcontroller - so i
     "train_services":None
 ```
 
-**Data for Station**: the train station full title, i.e. 'London Paddington'
-**Warning Messages**: any National Rail services messages applicable for the station.
-**Train Services**: an array of dictionaries conforming to the standard below 
+- **Data for Station**: the train station full title, i.e. 'London Paddington'
+- **Warning Messages**: any National Rail services messages applicable for the station.
+- **Train Services**: an array of dictionaries conforming to the standard below 
 
 **Train Services response template:**
 
@@ -53,10 +53,10 @@ In order to denote a positive or negative response to the microcontroller - so i
     "exp_arrival":None
 ```
 
-**Ordinal**: the ordinal position of the service on the board, i.e. 1st, 2nd, 3rd
-**Destination**: of train service
-**Sch_Arrival**: scheduled arrival time
-**Exp_Arrival**: the expected arrival time of the service
+- **Ordinal**: the ordinal position of the service on the board, i.e. 1st, 2nd, 3rd 
+- **Destination**: of train service
+- **Sch_Arrival**: scheduled arrival time
+- **Exp_Arrival**: the expected arrival time of the service
 
 **📊 Negative Response (Error Message returned)**
 
