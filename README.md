@@ -143,6 +143,9 @@ If the network that the middleware is hosteed on isn't using a network firewall 
 ```sudo ufw allow proto tcp from esp32IP/32 to DockerHostIP port 5000```
 
 ## ✅ What's Next? 
+
+⬜ Scrolling destinations that are too long for the display segment
+
 ⬜ Add in additional authentication services 
 
 ⬜ Leverage UDP communication so the microcontroller can automatically detect the API address
