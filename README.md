@@ -94,6 +94,8 @@ In order to denote a positive or negative response to the microcontroller - so i
 
 ### 📺 Display Efficacy
 
+### 🔒 Layering in Security
+
 ## ✅ What's Next? 
 
 ## ⚙️ Technology Stack
