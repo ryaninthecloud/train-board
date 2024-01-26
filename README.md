@@ -34,10 +34,12 @@ In order to denote a positive or negative response to the microcontroller - so i
 **📊 Positive Response (Train Services returned)**
 
 ```
+{
     "response_status":200,
     "data_for_station":None,
     "warning_messages":None,
     "train_services":None
+}
 ```
 
 - **Data for Station**: the train station full title, i.e. 'London Paddington'
@@ -47,10 +49,12 @@ In order to denote a positive or negative response to the microcontroller - so i
 **Train Services response template:**
 
 ```
+{
     "ordinal":None,
     "destination":None,
     "sch_arrival":None,
     "exp_arrival":None
+}
 ```
 
 - **Ordinal**: the ordinal position of the service on the board, i.e. 1st, 2nd, 3rd 
@@ -71,12 +75,14 @@ In order to denote a positive or negative response to the microcontroller - so i
 Examples of errors returned for display are:
 
 ```
+{
     "darwin_connection":"Could not connect to Darwin",
     "darwin_authorisation":"Check Darwin Token",
     "darwin_other":"Other Darwin Error",
     "darwin_station_key":"Check Station Key",
     "internal_auth":"Check IP Allwd",
     "check_logs_api":"Check Logs API"
+}
 ```
 
 
