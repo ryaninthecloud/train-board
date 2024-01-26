@@ -15,11 +15,16 @@ Because of the limited storage and processing power, the middleware API acts as 
 
 ![diagram of architecture](https://github.com/ryaninthecloud/ryaninthecloud.github.io/blob/main/assets/train-board/architecture.png)
 
-## 🧑‍🎨 Design Principles
+## 🧑‍🎨 Design Decisions
+
+### 🎯 Abstracting Microcontroller Responsibility
+Due to the storage and processing power limitations of the ESP32, one of the key design decisions made for this project was to abstract as much parsing and processing responsibility away from the microcontroller as possible. This both increases speed of development and simplifies the process for future changes: as modifications only need to be made to one codebase (the middleware).
+
+Therefore, the microcontroller should merely be a conduit for receiving messages from the middleware and then displaying them.
 
 ### 🔮 Predictable Middleware API
 
-One of the key design choices of this project was to have a predictable API sit between the Darwin Service and the Microcontroller. Predictability, in this context, means abstracting errors with Darwin away from the microcontroller, and instead returning simplified messages for the microcontroller to display to indicate an issue.
+In order to enable the Abstraction of Responsibility from the microcontroller, this project has a predictable API sitting between the Darwin Service and the Microcontroller. Predictability, in this context, means abstracting errors with Darwin away from the microcontroller, and instead returning simplified messages for the microcontroller to display to indicate an issue.
 
 Predictability is achieved by only programming the microcontroller to parse and display messages in accordance with a defined format. The API will always return an HTTP 200-code by design (even when it itself encounters an issue), because, in this system, even the returning an error message for display is considered a successful operation of the middleware. A total failure of the API (i.e. a non-response) is handled by the microcontroller by falling back to a pre-programmed message.
 
@@ -87,8 +92,7 @@ In order to denote a positive or negative response to the microcontroller - so i
 }
 ```
 
-**🎯 Microcontroller Responsibility**
-**📺 Display Efficacy**
+### 📺 Display Efficacy
 
 ## ✅ What's Next? 
 
