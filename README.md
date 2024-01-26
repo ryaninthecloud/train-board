@@ -137,8 +137,11 @@ This solution does not work when leveraging Gunicorn on Docker, as the remote ad
 
 ## ✅ What's Next? 
 ⬜ Add in additional authentication services 
+
 ⬜ Leverage UDP communication so the microcontroller has automatically detect the API address
+
 ⬜ Have microcontroller receive configuration information from the API
+
 ⬜ Build a simple, secure web page for modifying the configuration of the middleware
 
 ## ⚙️ Technology Stack
