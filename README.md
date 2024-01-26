@@ -17,7 +17,7 @@ Because of the limited storage and processing power, the middleware API acts as 
 
 ## 🧑‍🎨 Design Principles
 
-### 🔮 Predictable Middleware API###\
+### 🔮 Predictable Middleware API \
 
 One of the key design choices of this project was to have a predictable API sit between the Darwin Service and the Microcontroller. Predictability, in this context, means abstracting errors with Darwin away from the microcontroller, and instead returning simplified messages for the microcontroller to display to indicate an issue.
 
