@@ -1,7 +1,11 @@
 
 # Train Board
 
-### I wanted a train arrivals board at home, so I built this.
+## 📷 How's it Looking?
+
+![photo of display](https://github.com/ryaninthecloud/ryaninthecloud.github.io/blob/main/assets/train-board/demo_photo_01.jpg?raw=true)
+
+![video of display](https://github.com/ryaninthecloud/ryaninthecloud.github.io/blob/main/assets/train-board/demo_video_01.mp4)
 
 ## ☕ Project Overview
 
@@ -15,6 +19,7 @@ Because of the limited storage and processing power, the middleware API acts as 
 
 ### Design Principles
 ------
+
 
 **Predictable Middleware API**\
 One of the key design choices of this project was to have a predictable API sit between the Darwin Service and the Microcontroller. Predictability, in this context, means abstracting errors with Darwin away from the microcontroller, and instead returning simplified messages for the microcontroller to display to indicate an issue.
@@ -84,7 +89,7 @@ Examples of errors returned for display are:
     "check_logs_api":"Check Logs API"
 }
 ```
-
+## ✅ What's Next? 
 
 ## ⚙️ Technology Stack
 
