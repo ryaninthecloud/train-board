@@ -105,6 +105,7 @@ The process of receiving and displaying information on a matrix display is quite
 In the C code, each of the sections above are given position integers for the display cursor to begin writing to. The display writing posed a challenge for consitency, so there are some design choices that were made to make life easier when displaying information.
 
 **📍 Destination Length**
+
 When destinations are too long, they look messy, this is because they overwrite the pixels of other display segments. Therefore, ```shorten_text_to_space()``` function was implemented. This function takes the string to be displayed and the maximum number of pixels available to display the string, if the string is too long for that space, the function recursively shortens the string until it fits within the specified space.
 
 **⏲️ Consistent Time Display**
