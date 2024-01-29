@@ -138,11 +138,13 @@ This solution does not work when leveraging Gunicorn on Docker, as the remote ad
 
 **📛 Good ol' UFW**
 
-If the network that the middleware is hosteed on isn't using a network firewall or SDN, then it's perfectly possible to leverage a software firewall such as UncomplicatedFirewall. For firewall rules, it would likely be best to limit the port access the ESP32 has to the Docker host, such as:
+If the network that the middleware is hosted on isn't using a network firewall or SDN, then it's perfectly possible to leverage a software firewall such as UncomplicatedFirewall. For firewall rules, it would likely be best to limit the port access the ESP32 has to the Docker host, such as:
 
 ```sudo ufw allow proto tcp from esp32IP/32 to DockerHostIP port 5000```
 
 ## ✅ What's Next? 
+
+⬜ Implementing more generic return schema for train services, moving from 'exp_arr' to 'exp_time'
 
 ⬜ Scrolling destinations that are too long for the display segment
 
