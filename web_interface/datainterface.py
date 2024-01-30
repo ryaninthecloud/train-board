@@ -189,8 +189,8 @@ class DataInterface:
         service_template = {
             "ordinal":None,
             "destination":None,
-            "sch_arrival":None,
-            "exp_arrival":None
+            "sch_time":None,
+            "exp_time":None
         }
 
         arrivals_dict = xmltodict.parse(arrivals_element_tree)
@@ -209,7 +209,7 @@ class DataInterface:
                 warning_messages = warning_messages[0]
             warning_messages = warning_messages.split('.')[0].replace('/', '').replace("\n","").replace("<p>","").replace("</p>","")
         except KeyError:
-            warning_messages = f'Good Service for station {data_for_station}'
+            warning_messages = f'Good Service for station: {data_for_station}'
 
         cleaned_train_services = []
 
@@ -221,16 +221,16 @@ class DataInterface:
                 _service = service_template.copy()
                 _service['ordinal'] = self.make_ordinal(train_service_position_integer)
                 _service['destination'] = service['lt5:destination']['lt4:location']['lt4:locationName']
-                _service['sch_arrival'] = service['lt4:std']
-                _service['exp_arrival'] = service['lt4:etd']
+                _service['sch_time'] = service['lt4:std']
+                _service['exp_time'] = service['lt4:etd']
                 cleaned_train_services.append(_service)
                 train_service_position_integer += 1
         except KeyError:
             service = service_template
             service['ordinal'] = self.make_ordinal(1)
             service['destination'] = "No Services"
-            service['sch_arrival'] = "0000"
-            service['exp_arrival'] = "0000"
+            service['sch_time'] = "0000"
+            service['exp_time'] = "0000"
             cleaned_train_services.append(service)
 
         print(cleaned_train_services)
