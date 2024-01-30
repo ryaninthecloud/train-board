@@ -162,6 +162,7 @@ String make_http_get_request(const char* endpoint) {
   } else {
     Serial.println("HTTP Error");
     Serial.println(http_response_code);
+    payload = "{'response_status':'500', 'error_type':'api_unavailable', 'error_message':'API Unavailable'}";
   }
 
   http_client.end();
