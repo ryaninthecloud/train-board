@@ -144,7 +144,7 @@ If the network that the middleware is hosted on isn't using a network firewall o
 
 ## ✅ What's Next? 
 
-⬜ Implementing more generic return schema for train services, moving from 'exp_arr' to 'exp_time'
+✅ ~Implementing more generic return schema for train services, moving from 'exp_arr' to 'exp_time'~
 
 ⬜ Scrolling destinations that are too long for the display segment
 
