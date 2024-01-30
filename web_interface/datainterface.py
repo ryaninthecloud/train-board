@@ -152,8 +152,6 @@ class DataInterface:
         """
         try:        
             response = requests.post(self.__darwin_url, data=body, headers=self.__common_headers)
-            print(response.status_code)
-            print(response.text)
             if response.status_code == 401:
                 return "XTErrorXT:darwin_authorisation"
             elif response.status_code in [404, 400]:
