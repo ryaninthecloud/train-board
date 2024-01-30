@@ -29,6 +29,7 @@ def request_authorisation():
     try:
         ip_restrictive_state, allowed_ips = load_restrictive_ip_configuration()
         if ip_restrictive_state and request.remote_addr not in allowed_ips:
+            print("remote host denied", request.remote_addr)
             return DataInterface.produce_error_response("internal_auth")
     except Exception:
         return DataInterface.produce_error_response("check_logs_api")
@@ -39,4 +40,4 @@ if __name__ == "__main__":
     This file shouldn't be used for hosting.
     """
     validate_configuration_for_application()
-    web_application.run()
+    web_application.run(host="0.0.0.0")

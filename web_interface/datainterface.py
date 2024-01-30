@@ -115,13 +115,13 @@ class DataInterface:
 
         return error_template
 
-    def get_station_arrivals(self, arrival_station=None, 
+    def get_station_departures(self, departure_station=None, 
                              time_window=None, max_rows=None) -> str:
         """
-        Makes request to Darwin to get station arrivals
+        Makes request to Darwin to get station departures
         based on the configuration parameters
 
-        :param arrival_station: optional for alternative station
+        :param departure_station: optional for alternative station
         :type: string
         :param time_window: optional for alternative time window
         :type: int
@@ -130,7 +130,7 @@ class DataInterface:
         :rtype string
         """
 
-        arrival_station = arrival_station if arrival_station is not None else self.__default_arrival_station
+        departure_station = departure_station if departure_station is not None else self.__default_departure_station
         time_window = time_window if time_window is not None else self.__default_time_window
         max_rows = max_rows if max_rows is not None else self.__default_max_rows
 
@@ -144,7 +144,7 @@ class DataInterface:
             <soapenv:Body>
                 <ldb:GetDepartureBoardRequest>
                     <ldb:numRows>{max_rows}</ldb:numRows>
-                    <ldb:crs>{arrival_station}</ldb:crs>
+                    <ldb:crs>{departure_station}</ldb:crs>
                     <ldb:timeWindow>{time_window}</ldb:timeWindow>
                 </ldb:GetDepartureBoardRequest>
             </soapenv:Body>
@@ -164,20 +164,20 @@ class DataInterface:
             return "XTErrorTX:darwin_connection"
         return response.text
 
-    def return_display_friendly_arrivals(self, arrivals_element_tree: str) -> dict:
+    def return_display_friendly_departures(self, departures_element_tree: str) -> dict:
         """
         Returns a dictionary formatted for parsing by
         the ESP32 to display information on the
         matrix board.
 
-        :param arrivals_element_tree: the element tree from the arrivals api
+        :param departures_element_tree: the element tree from the departures api
         :type: string
-        :returns dictionary of train arrivals
+        :returns dictionary of train departures
         :rtype dict
         """
 
-        if "XTErrorXT:" in arrivals_element_tree:
-            return self.produce_error_response(arrivals_element_tree.split(":")[1])
+        if "XTErrorXT:" in departures_element_tree:
+            return self.produce_error_response(departures_element_tree.split(":")[1])
 
         response_template = {
             "response_status":200,
@@ -193,10 +193,10 @@ class DataInterface:
             "exp_time":None
         }
 
-        arrivals_dict = xmltodict.parse(arrivals_element_tree)
+        departures_dict = xmltodict.parse(departures_element_tree)
 
         try:
-            content_root = arrivals_dict['soap:Envelope']\
+            content_root = departures_dict['soap:Envelope']\
                 ['soap:Body']['GetDepartureBoardResponse']['GetStationBoardResult']
             data_for_station = content_root['lt4:locationName']
         except KeyError:
@@ -228,9 +228,9 @@ class DataInterface:
         except KeyError:
             service = service_template
             service['ordinal'] = self.make_ordinal(1)
-            service['destination'] = "No Services"
-            service['sch_time'] = "0000"
-            service['exp_time'] = "0000"
+            service['destination'] = "NoSvcs"
+            service['sch_time'] = "00:00"
+            service['exp_time'] = "00:00"
             cleaned_train_services.append(service)
 
         print(cleaned_train_services)

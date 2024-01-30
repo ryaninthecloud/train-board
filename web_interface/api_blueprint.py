@@ -19,13 +19,13 @@ def api_heartbeat(methods=["GET"]):
         "api_status":"up"
     }
 
-@api_blueprint.route("/get_station_arrivals")
-def get_station_arrivals(methods=["GET"]):
+@api_blueprint.route("/get_station_departures")
+def get_station_departures(methods=["GET"]):
     """
-    This route is used to return arrivals at
+    This route is used to return departures at
     the station provided within the configuration.ini
     """
     data_interface = DataInterface()
-    arrivals = data_interface.get_station_arrivals()
-    arrivals = data_interface.return_display_friendly_arrivals(arrivals)
-    return(arrivals)
+    departures = data_interface.get_station_departures()
+    departures = data_interface.return_display_friendly_departures(departures)
+    return(departures)
