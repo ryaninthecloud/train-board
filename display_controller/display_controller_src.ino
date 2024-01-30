@@ -279,8 +279,8 @@ void set_update_dispatch_line(JsonObject service_data, int dispatch_row, int com
 
   String train_service_ordinal = service_data["ordinal"];
   String train_service_destination = service_data["destination"];
-  String train_service_sch_arrival = service_data["sch_arrival"];
-  String train_service_exp_arrival = service_data["exp_arrival"];
+  String train_service_sch_arrival = service_data["sch_time"];
+  String train_service_exp_arrival = service_data["exp_time"];
 
   switch (dispatch_row) {
     case 0:
