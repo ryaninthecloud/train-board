@@ -153,6 +153,7 @@ class DataInterface:
         try:        
             response = requests.post(self.__darwin_url, data=body, headers=self.__common_headers)
             print(response.status_code)
+            print(response.text)
             if response.status_code == 401:
                 return "XTErrorXT:darwin_authorisation"
             elif response.status_code in [404, 400]:
@@ -208,7 +209,7 @@ class DataInterface:
                 warning_messages = warning_messages[0]
             warning_messages = warning_messages.split('.')[0].replace('/', '').replace("\n","").replace("<p>","").replace("</p>","")
         except KeyError:
-            warning_messages = f'Good Service for Station {data_for_station}'
+            warning_messages = f'Good Service for station {data_for_station}'
 
         cleaned_train_services = []
 
@@ -226,11 +227,11 @@ class DataInterface:
                 train_service_position_integer += 1
         except KeyError:
             service = service_template
-            _service['ordinal'] = self.make_ordinal(1)
-            _service['destination'] = "No Services"
-            _service['sch_arrival'] = "0000"
-            _service['exp_arrival'] = "0000"
-            cleaned_train_services.append(_service)
+            service['ordinal'] = self.make_ordinal(1)
+            service['destination'] = "No Services"
+            service['sch_arrival'] = "0000"
+            service['exp_arrival'] = "0000"
+            cleaned_train_services.append(service)
 
         print(cleaned_train_services)
 
