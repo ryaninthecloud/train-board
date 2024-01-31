@@ -191,8 +191,8 @@ class DataInterface:
             "exp_time":None
         }
 
-        data_for_station = None
-        warning_messages = None
+        data_for_station = str()
+        warning_messages = str()
         departures_dict = xmltodict.parse(departures_element_tree)
 
         try:
